@@ -21,7 +21,8 @@ To create the final `Agent4k` executable:
 ```bash
 ./package.sh
 ```
-                                                                                                                                                                                                                        This command will output the Agent4k executable in the current directory and verify its size against the 4 KiB limit.
+
+This command will output the Agent4k executable in the current directory and verify its size against the 4 KiB limit.
 
 ## Running the Project
 You can run the packaged Agent4k executable directly:
@@ -29,7 +30,8 @@ You can run the packaged Agent4k executable directly:
 ```bash
 ./Agent4k
 ```
-                                                                                                                                                                                                                        Once running, the engine expects UCI commands via standard input (e.g., uci, isready, go, quit).
+
+Once running, the engine expects UCI commands via standard input (e.g., uci, isready, go, quit).
 
 ## Conventions
 
