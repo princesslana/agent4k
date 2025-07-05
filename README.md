@@ -16,19 +16,19 @@ This repository contains the source code and scripts for `Agent4k`, a chess engi
 
 The `Agent4k` executable is not built in the traditional sense but rather *packaged* by the `package.sh` script. This script handles the minification, compression, and combination of the C source and the wrapper script to produce the final tournament-ready binary.
 
-To create the final `Agent4k` executable:
+To create or update the final `Agent4k` executable:
 
 ```bash
-./package.sh
+make build
 ```
 
 This command will output the Agent4k executable in the current directory and verify its size against the 4 KiB limit.
 
 ## Running the Project
-You can run the packaged Agent4k executable directly:
+You can run the packaged Agent4k executable:
 
 ```bash
-./Agent4k
+make run
 ```
 
 Once running, the engine expects UCI commands via standard input (e.g., uci, isready, go, quit).
@@ -37,4 +37,3 @@ Once running, the engine expects UCI commands via standard input (e.g., uci, isr
 
 This project operates under very strict conventions, primarily driven by the 4KiB size limit and the overarching goal of winning the TCEC 4k tournament. Adherence to CONVENTIONS.md is paramount for all development
 efforts, as every byte and every optimization contributes to the engine's success.
-
