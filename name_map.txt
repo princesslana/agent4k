@@ -1,0 +1,82 @@
+# Agent4k Minification Name Map
+
+# Global Variables
+b_board -> gB
+s_side -> gS
+ep_en_passant -> gE
+cr_castling_rights -> gC
+k_king_pos -> gK
+ml_move_list -> gL
+mc_move_count -> gM
+ss_state_stack -> gT
+si_stack_idx -> gI
+
+# Piece Constants
+O_OFFBOARD -> _O
+E_EMPTY -> _E
+P_WHITE_PAWN -> _WP
+N_WHITE_KNIGHT -> _WN
+B_WHITE_BISHOP -> _WB
+R_WHITE_ROOK -> _WR
+Q_WHITE_QUEEN -> _WQ
+K_WHITE_KING -> _WK
+p_BLACK_PAWN -> _BP
+n_BLACK_KNIGHT -> _BN
+b_BLACK_BISHOP -> _BB
+r_BLACK_ROOK -> _BR
+q_BLACK_QUEEN -> _BQ
+k_BLACK_KING -> _BK
+
+# Move Type
+M_move -> M_t
+
+# Move Macros
+FROM -> M_F
+TO -> M_T
+PROM -> M_P
+FLAG -> M_L
+MOVE -> M_V
+
+# Move Flags
+M_NORMAL -> F_N
+M_CAPTURE -> F_C
+M_DBL_PUSH -> F_D
+M_EP -> F_X
+M_KS_CASTLE -> F_Y
+M_QS_CASTLE -> F_Z
+M_PROM -> F_R
+
+# Promotion Piece Types
+P_KNIGHT -> P_N
+P_BISHOP -> P_B
+P_ROOK -> P_R
+P_QUEEN -> P_Q
+
+# Struct S members (within S_t)
+ep_s -> e
+cr_s -> c
+c_s -> x
+
+# Function Names
+make_move -> fM
+unmake_move -> fU
+init_board -> fI
+is_own_piece -> fO
+is_opponent_piece -> fP
+is_sq_attacked -> fA
+add_legal_move -> fL
+gen_pawn_moves -> fP_pawn
+gen_knight_moves -> fN_knight
+gen_king_moves -> fK_king
+gen_sliding_moves -> fR_sliding
+gen_moves -> fG
+sq_to_str -> fQ_sq
+move_to_str -> fS_move
+str_to_sq -> fQ_str
+parse_move -> fP_parse
+
+# Direction Arrays
+knight_dirs -> dN
+king_dirs -> dK
+rook_dirs -> dR
+bishop_dirs -> dB
