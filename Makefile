@@ -1,4 +1,4 @@
-.PHONY: all build test run-selfplay-startpos clean run-selfplay-book
+.PHONY: all build test run-selfplay-startpos clean run-selfplay-book run-sprt-test
 
 all: build
 
@@ -14,5 +14,25 @@ run-selfplay-startpos: build
 run-selfplay-book: build
 	fastchess -engine cmd=./Agent4k name=Agent4k_1 tc=10+0.1 -engine cmd=./Agent4k name=Agent4k_2 tc=10+0.1 -pgnout file=selfplay_book.pgn -rounds 20 -openings file=8moves_v3.pgn format=pgn order=random -log file=fastchess_book_debug.log level=trace engine=true
 
+# SPRT Testing
+# Define the baseline tag to compare against
+BASELINE_TAG = v0.1
+
+run-sprt-test: build
+	@echo "--- Running SPRT Test: Current Agent4k vs $(BASELINE_TAG) ---"
+	# Create a temporary directory for the baseline engine
+	mkdir -p ./.baseline_engine
+	# Clone/checkout the baseline version into the temporary directory
+	git clone . ./.baseline_engine/repo
+	cd ./.baseline_engine/repo && git checkout $(BASELINE_TAG)
+	# Build the baseline engine
+	cd ./.baseline_engine/repo && make build > /dev/null
+	# Run fastchess with SPRT parameters
+	fastchess -engine cmd=./Agent4k name=Agent4k_Current tc=10+0.1 -engine cmd=./.baseline_engine/repo/Agent4k name=Agent4k_Baseline tc=10+0.1 -pgnout file=sprt_test.pgn -rounds 100 -openings file=8moves_v3.pgn format=pgn order=random -log file=sprt_test.log level=info -sprt elo0=0 elo1=5 alpha=0.05 beta=0.05
+	# Clean up the temporary directory
+	rm -rf ./.baseline_engine
+	@echo "--- SPRT Test Complete ---"
+	@echo "Check sprt_test.log and sprt_test.pgn for results."
+
 clean:
-	rm -f Agent4k fastchess_debug.log selfplay_debug.pgn selfplay_book.pgn fastchess_book_debug.log config.json engine.c.xz
+	rm -f Agent4k fastchess_debug.log selfplay_debug.pgn selfplay_book.pgn fastchess_book_debug.log config.json engine.c.xz sprt_test.log sprt_test.pgn

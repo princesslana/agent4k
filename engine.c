@@ -39,7 +39,7 @@ static const int dN[]={-21,-19,-12,-8,8,12,19,21};
 static const int dK[]={-11,-10,-9,-1,1,9,10,11};
 static const int dR[]={-10,-1,1,10};
 static const int dB[]={-11,-9,9,11};
-void fM(M_t m);void fU(M_t m);void fI();int fO(char c);int fP(char c);int fA(int q,int s);void fL(M_t m);void fP_pawn(int q);void fN_knight(int q);void fK_king(int q);void fR_sliding(int q,int*d,int c);void fG();char*fQ_sq(int q);char*fS_move(M_t m);int fQ_str(char*s);M_t fP_parse(char*s);
+void fM(M_t m);void fU(M_t m);void fI();int fO(char c);int fP(char c);int fA(int q,int s);void fL(M_t m);void fP_pawn(int q);void fN_knight(int q);void fK_king(int q);void fR_sliding(int q,int*d,int c);void fG();char*fQ_sq(int q);char*fS_move(M_t m);int fQ_str(char*s);M_t fP_parse(char*s);int fV(char p);int fS_score_move(M_t m);
 int fO(char c){return(c==_E||c==_O)?0:(gS==0?(c>='A'&&c<='Z'):(c>='a'&&c<='z'));}
 int fP(char c){return(c==_E||c==_O)?0:(gS==0?(c>='a'&&c<='z'):(c>='A'&&c<='Z'));}
 void fL(M_t m){fM(m);if(!fA(gK[!gS],gS))gL[gM++]=m;fU(m);}
@@ -98,10 +98,33 @@ M_t fP_parse(char*s_str){int f=fQ_str(s_str),t=fQ_str(s_str+2),pt=0;char pc=(str
 if(pc!='\0'){switch(pc){case'n':pt=P_N;break;case'b':pt=P_B;break;case'r':pt=P_R;break;case'q':pt=P_Q;break;default:return 0;}}
 fG();for(int i=0;i<gM;i++){M_t cm=gL[i];if(M_F(cm)==f&&M_T(cm)==t){if((M_L(cm)&F_R)&&M_P(cm)==pt)return cm;
 if(!(M_L(cm)&F_R)&&pc=='\0')return cm;}}return 0;}
+int fV(char p){
+if(p==_WP||p==_BP)return 100;
+if(p==_WN||p==_BN)return 300;
+if(p==_WB||p==_BB)return 300;
+if(p==_WR||p==_BR)return 500;
+if(p==_WQ||p==_BQ)return 900;
+return 0;}
+int fS_score_move(M_t m){
+int score=0;
+char moving_piece=gB[M_F(m)];
+char captured_piece=gB[M_T(m)];
+if(M_L(m)&F_R)score+=900;
+if(captured_piece!=_E)score+=10*fV(captured_piece)-fV(moving_piece);
+else if(M_L(m)==F_X)score+=10*fV((gS==0)?_BP:_WP)-fV((gS==0)?_WP:_BP);
+return score;}
 int main(){char l[256];setbuf(stdin,NULL);setbuf(stdout,NULL);fI();
 while(fgets(l,256,stdin)){if(strncmp(l,"uci",3)==0){printf("uciok\n");}
 else if(strncmp(l,"isready",7)==0){printf("readyok\n");}
 else if(strncmp(l,"position startpos",17)==0){fI();char*ms=strstr(l,"moves");if(ms){ms+=6;char*tk=strtok(ms," \n");
 while(tk){M_t mv=fP_parse(tk);if(mv!=0)fM(mv);else break;tk=strtok(NULL," \n");}}}
-else if(strncmp(l,"go",2)==0){fG();if(gM>0)printf("bestmove %s\n",fS_move(gL[0]));else printf("bestmove (none)\n");}
+else if(strncmp(l,"go",2)==0){fG();
+if(gM>0){
+for(int i=0;i<gM-1;i++){
+for(int j=i+1;j<gM;j++){
+if(fS_score_move(gL[j])>fS_score_move(gL[i])){
+M_t temp=gL[i];
+gL[i]=gL[j];
+gL[j]=temp;}}}
+printf("bestmove %s\n",fS_move(gL[0]));}else printf("bestmove (none)\n");}
 else if(strncmp(l,"quit",4)==0)break;}return 0;}
