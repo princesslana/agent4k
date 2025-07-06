@@ -48,13 +48,11 @@ fi
 echo "Verifying engine responses..."
 ALL_PASSED=true
 
-# Test 1: 'uci' command response
-if grep -q "id name Agent4k" "$TEST_LOG" && \
-   grep -q "id author Aider" "$TEST_LOG" && \
-   grep -q "uciok" "$TEST_LOG"; then
+# Test 1: 'uci' command response - now only checks for uciok
+if grep -q "uciok" "$TEST_LOG"; then
     echo "  'uci' test: PASSED"
 else
-    echo "  'uci' test: FAILED - Expected 'id name Agent4k', 'id author Aider', 'uciok'."
+    echo "  'uci' test: FAILED - Expected 'uciok'."
     ALL_PASSED=false
 fi
 

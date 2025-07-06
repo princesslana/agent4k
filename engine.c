@@ -99,7 +99,7 @@ if(pc!='\0'){switch(pc){case'n':pt=P_N;break;case'b':pt=P_B;break;case'r':pt=P_R
 fG();for(int i=0;i<gM;i++){M_t cm=gL[i];if(M_F(cm)==f&&M_T(cm)==t){if((M_L(cm)&F_R)&&M_P(cm)==pt)return cm;
 if(!(M_L(cm)&F_R)&&pc=='\0')return cm;}}return 0;}
 int main(){char l[256];setbuf(stdin,NULL);setbuf(stdout,NULL);fI();
-while(fgets(l,256,stdin)){if(strncmp(l,"uci",3)==0){printf("id name Agent4k\nid author Aider\nuciok\n");}
+while(fgets(l,256,stdin)){if(strncmp(l,"uci",3)==0){printf("uciok\n");}
 else if(strncmp(l,"isready",7)==0){printf("readyok\n");}
 else if(strncmp(l,"position startpos",17)==0){fI();char*ms=strstr(l,"moves");if(ms){ms+=6;char*tk=strtok(ms," \n");
 while(tk){M_t mv=fP_parse(tk);if(mv!=0)fM(mv);else break;tk=strtok(NULL," \n");}}}
