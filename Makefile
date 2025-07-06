@@ -9,17 +9,21 @@ test: build
 	./test_uci.sh
 
 run-selfplay-startpos: build
-	fastchess -engine cmd=./Agent4k name=Agent4k_1 tc=10+0.1 -engine cmd=./Agent4k name=Agent4k_2 tc=10+0.1 -pgnout file=selfplay_debug.pgn -rounds 1 -log file=fastchess_debug.log level=trace engine=true
+	mkdir -p logs pgns
+	fastchess -engine cmd=./Agent4k name=Agent4k_1 tc=10+0.1 -engine cmd=./Agent4k name=Agent4k_2 tc=10+0.1 -pgnout file=pgns/selfplay_debug.pgn -rounds 1 -log file=logs/fastchess_debug.log level=trace engine=true
 
 run-selfplay-book: build
-	fastchess -engine cmd=./Agent4k name=Agent4k_1 tc=10+0.1 -engine cmd=./Agent4k name=Agent4k_2 tc=10+0.1 -pgnout file=selfplay_book.pgn -rounds 20 -openings file=8moves_v3.pgn format=pgn order=random -log file=fastchess_book_debug.log level=trace engine=true
+	mkdir -p logs pgns
+	fastchess -engine cmd=./Agent44k name=Agent4k_2 tc=10+0.1 -pgnout file=pgns/selfplay_book.pgn -rounds 20 -openings file=8moves_v3.pgn format=pgn order=random -log file=logs/fastchess_book_debug.log level=trace engine=true
 
 # SPRT Testing
 # Define the baseline tag to compare against
-BASELINE_TAG = v0.1
+BASELINE_TAG = v0.2
 
 run-sprt-test: build
 	@echo "--- Running SPRT Test: Current Agent4k vs $(BASELINE_TAG) ---"
+	# Create directories for logs and pgns
+	mkdir -p logs pgns
 	# Create a temporary directory for the baseline engine
 	mkdir -p ./.baseline_engine
 	# Clone/checkout the baseline version into the temporary directory
@@ -28,11 +32,12 @@ run-sprt-test: build
 	# Build the baseline engine
 	cd ./.baseline_engine/repo && make build > /dev/null
 	# Run fastchess with SPRT parameters
-	fastchess -engine cmd=./Agent4k name=Agent4k_Current tc=10+0.1 -engine cmd=./.baseline_engine/repo/Agent4k name=Agent4k_Baseline tc=10+0.1 -pgnout file=sprt_test.pgn -rounds 100 -openings file=8moves_v3.pgn format=pgn order=random -log file=sprt_test.log level=info -sprt elo0=0 elo1=5 alpha=0.05 beta=0.05
+	fastchess -engine cmd=./Agent4k name=Agent4k_Current tc=10+0.1 -engine cmd=./.baseline_engine/repo/Agent4k name=Agent4k_Baseline tc=10+0.1 -pgnout file=pgns/sprt_test.pgn -rounds 100 -openings file=8moves_v3.pgn format=pgn order=random -log file=logs/sprt_test.log level=info -sprt elo0=0 elo1=5 alpha=0.05 beta=0.05
 	# Clean up the temporary directory
 	rm -rf ./.baseline_engine
 	@echo "--- SPRT Test Complete ---"
-	@echo "Check sprt_test.log and sprt_test.pgn for results."
+	@echo "Check logs/sprt_test.log and pgns/sprt_test.pgn for results."
 
 clean:
-	rm -f Agent4k fastchess_debug.log selfplay_debug.pgn selfplay_book.pgn fastchess_book_debug.log config.json engine.c.xz sprt_test.log sprt_test.pgn
+	rm -f Agent4k config.json engine.c.xz
+	rm -rf logs/ pgns/
