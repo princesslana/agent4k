@@ -1,23 +1,18 @@
-.PHONY: all build run clean test selfplay
+.PHONY: all build test run-selfplay-startpos clean run-selfplay-book
 
 all: build
 
 build:
-	@echo "Packaging Agent4k..."
 	./package.sh
 
-run: build
-	@echo "Running Agent4k..."
-	./Agent4k
-
-selfplay: build
-	@echo "Running self-play game with Agent4k (debug enabled)..."
-	fastchess -engine cmd=./Agent4k name=Agent4k_1 tc=10+0.1 -engine cmd=./Agent4k name=Agent4k_2 tc=10+0.1 -pgnout file=selfplay_debug.pgn -rounds 1 -log file=fastchess_debug.log level=trace engine=true
-
 test: build
-	@echo "Running UCI compliance tests..."
 	./test_uci.sh
 
+run-selfplay-startpos: build
+	fastchess -engine cmd=./Agent4k name=Agent4k_1 tc=10+0.1 -engine cmd=./Agent4k name=Agent4k_2 tc=10+0.1 -pgnout file=selfplay_debug.pgn -rounds 1 -log file=fastchess_debug.log level=trace engine=true
+
+run-selfplay-book: build
+	fastchess -engine cmd=./Agent4k name=Agent4k_1 tc=10+0.1 -engine cmd=./Agent4k name=Agent4k_2 tc=10+0.1 -pgnout file=selfplay_book.pgn -rounds 20 -openings file=8moves_v3.pgn format=pgn order=random -log file=fastchess_book_debug.log level=trace engine=true
+
 clean:
-	@echo "Cleaning build artifacts..."
-	rm -f Agent4k *.o *.tmp uci_test_output.log engine_input.tmp selfplay_debug.pgn fastchess_debug.log
+	rm -f Agent4k fastchess_debug.log selfplay_debug.pgn selfplay_book.pgn fastchess_book_debug.log config.json engine.c.xz
