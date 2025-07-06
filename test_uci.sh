@@ -22,8 +22,9 @@ go
 quit
 EOF
 
-# Run the engine, pipe input, capture output, with a timeout
+# Run the engine, pipe input, capture STDOUT and STDERR, with a timeout
 # The 'timeout' command prevents the test from hanging indefinitely
+# Redirect stderr (2) to stdout (1), then redirect stdout to TEST_LOG
 timeout 10s "$ENGINE" < "$ENGINE_INPUT" > "$TEST_LOG" 2>&1
 
 TEST_EXIT_CODE=$?
@@ -65,11 +66,11 @@ else
     ALL_PASSED=false
 fi
 
-# Test 3: 'go' command response
-if grep -q "bestmove a1a2" "$TEST_LOG"; then
+# Test 3: 'go' command response - check for any 'bestmove' output
+if grep -q "bestmove " "$TEST_LOG"; then
     echo "  'go' test: PASSED"
 else
-    echo "  'go' test: FAILED - Expected 'bestmove a1a2'."
+    echo "  'go' test: FAILED - Expected a 'bestmove' output."
     ALL_PASSED=false
 fi
 
@@ -80,6 +81,7 @@ if $ALL_PASSED; then
     exit 0
 else
     echo "--- UCI Compliance Tests FAILED ---"
+    # Only show full engine output for debugging if tests failed
     echo "--- Full Engine Output for Debugging ---"
     cat "$TEST_LOG"
     rm "$ENGINE_INPUT" "$TEST_LOG"

@@ -6,6 +6,7 @@ This document outlines the core principles and priorities for developing the `Ag
 
 2.  **Absolute Constraint: 4KiB Size Limit:**
     *   The final submitted file (wrapper script + compressed engine) **MUST NOT EXCEED 4096 bytes**.
+    *   **During development and debugging, exceeding this limit is permissible.** However, the limit **must be met before any feature is considered complete** and certainly before final submission.
     *   **This limit applies *only* to the size of the submitted package.**
     *   It does *not* imply any runtime resource constraints (CPU, RAM, disk space) on the machine executing the compiled engine. The compiled engine can use available system resources freely.
     *   There are no size limits on development-time files, testing scripts, or other non-submitted assets.
