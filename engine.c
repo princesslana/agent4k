@@ -44,32 +44,7 @@ int fO(char c){return(c==_E||c==_O)?0:(gS==0?(c>='A'&&c<='Z'):(c>='a'&&c<='z'));
 int fP(char c){return(c==_E||c==_O)?0:(gS==0?(c>='a'&&c<='z'):(c>='A'&&c<='Z'));}
 void fL(M_t m){fM(m);if(!fA(gK[!gS],gS))gL[gM++]=m;fU(m);}
 void fI(){int i,j;for(i=0;i<120;i++)gB[i]=_O;for(i=0;i<8;i++)for(j=0;j<8;j++)gB[21+i*10+j]=_E;gB[21]=_WR;gB[22]=_WN;gB[23]=_WB;gB[24]=_WQ;gB[25]=_WK;gB[26]=_WB;gB[27]=_WN;gB[28]=_WR;for(i=0;i<8;i++)gB[31+i]=_WP;for(i=0;i<8;i++)gB[81+i]=_BP;gB[91]=_BR;gB[92]=_BN;gB[93]=_BB;gB[94]=_BQ;gB[95]=_BK;gB[96]=_BB;gB[97]=_BN;gB[98]=_BR;gS=0;gE=0;gC=15;gK[0]=25;gK[1]=95;gI=0;}
-void fM(M_t m_val){
-    char f=M_F(m_val),t=M_T(m_val),l=M_L(m_val),p_prom_type=M_P(m_val);
-    char from_sq_str[3], to_sq_str[3];
-    strcpy(from_sq_str, fQ_sq(f));
-    strcpy(to_sq_str, fQ_sq(t));
-    printf("DEBUG_FM_UNPACK: Move: %s, F:%s, T:%s, L:%d, P:%d, gS_before_move:%d\n", fS_move(m_val), from_sq_str, to_sq_str, l, p_prom_type, gS);
-
-    gT[gI].e=gE;gT[gI].c=gC;gT[gI].x=_E;gI++;gE=0;if(gB[f]==_WK)gC&=~3;else if(gB[f]==_BK)gC&=~12;if(f==21||t==21)gC&=~2;if(f==28||t==28)gC&=~1;if(f==91||t==91)gC&=~8;if(f==98||t==98)gC&=~4;if(gB[t]!=_E)gT[gI-1].x=gB[t];gB[t]=gB[f];gB[f]=_E;if(gB[t]==_WK)gK[0]=t;else if(gB[t]==_BK)gK[1]=t;
-switch(l){case F_D:gE=(gS==0)?(t-10):(t+10);break;case F_X:gT[gI-1].x=(gS==0)?_BP:_WP;gB[(gS==0)?(t+10):(t-10)]=_E;break;case F_Y:gB[(gS==0)?28:98]=_E;gB[(gS==0)?26:96]=(gS==0)?_WR:_BR;break;case F_Z:gB[(gS==0)?21:91]=_E;gB[(gS==0)?24:94]=(gS==0)?_WR:_BR;break;}if(l&F_R)gB[t]=(gS==0)?(p_prom_type==P_N?_WN:(p_prom_type==P_B?_WB:(p_prom_type==P_R?_WR:_WQ))):(p_prom_type==P_N?_BN:(p_prom_type==P_B?_BB:(p_prom_type==P_R?_BR:_BQ)));
-    
-    printf("DEBUG_FM_END: Board state after move %s (before side switch):\n", fS_move(m_val));
-    for (int i = 9; i >= 2; i--) {
-        printf("DEBUG_FM_END: %d ", i - 1);
-        for (int j = 1; j <= 8; j++) {
-            printf("%c ", gB[i * 10 + j]);
-        }
-        printf("\n");
-    }
-    printf("DEBUG_FM_END:   a b c d e f g h\n");
-    char wk_str[3], bk_str[3]; strcpy(wk_str, fQ_sq(gK[0])); strcpy(bk_str, fQ_sq(gK[1]));
-    printf("DEBUG: En passant: %s\n", gE == 0 ? "none" : fQ_sq(gE));
-    printf("DEBUG: Castling rights: %d (WKCA:%d, WQCA:%d, BKCA:%d, BQCA:%d)\n", gC, (gC&1)!=0, (gC&2)!=0, (gC&4)!=0, (gC&8)!=0);
-    printf("DEBUG_FM_END: White King: %s, Black King: %s\n", wk_str, bk_str);
-    printf("DEBUG_FM_END: Side to move: %s\n", gS == 0 ? "White" : "Black"); // This is the side *before* switch
-
-    gS=!gS;}
+void fM(M_t m_val){char f=M_F(m_val),t=M_T(m_val),l=M_L(m_val),p_prom_type=M_P(m_val);gT[gI].e=gE;gT[gI].c=gC;gT[gI].x=_E;gI++;gE=0;if(gB[f]==_WK)gC&=~3;else if(gB[f]==_BK)gC&=~12;if(f==21||t==21)gC&=~2;if(f==28||t==28)gC&=~1;if(f==91||t==91)gC&=~8;if(f==98||t==98)gC&=~4;if(gB[t]!=_E)gT[gI-1].x=gB[t];gB[t]=gB[f];gB[f]=_E;if(gB[t]==_WK)gK[0]=t;else if(gB[t]==_BK)gK[1]=t;switch(l){case F_D:gE=(gS==0)?(t-10):(t+10);break;case F_X:gT[gI-1].x=(gS==0)?_BP:_WP;gB[(gS==0)?(t+10):(t-10)]=_E;break;case F_Y:gB[(gS==0)?28:98]=_E;gB[(gS==0)?26:96]=(gS==0)?_WR:_BR;break;case F_Z:gB[(gS==0)?21:91]=_E;gB[(gS==0)?24:94]=(gS==0)?_WR:_BR;break;}if(l&F_R)gB[t]=(gS==0)?(p_prom_type==P_N?_WN:(p_prom_type==P_B?_WB:(p_prom_type==P_R?_WR:_WQ))):(p_prom_type==P_N?_BN:(p_prom_type==P_B?_BB:(p_prom_type==P_R?_BR:_BQ)));gS=!gS;}
 void fU(M_t m_val){gI--;char f=M_F(m_val),t=M_T(m_val),l=M_L(m_val);gB[f]=(l&F_R)?((gS==0)?_BP:_WP):gB[t];gB[t]=gT[gI].x;switch(l){case F_X:gB[(gS==0)?(t+10):(t-10)]=(gS==0)?_WP:_BP;break;case F_Y:gB[(gS==1)?28:98]=((gS==1)?_WR:_BR);gB[(gS==1)?26:96]=_E;break;case F_Z:gB[(gS==1)?21:91]=((gS==1)?_WR:_BR);gB[(gS==1)?24:94]=_E;break;}gE=gT[gI].e;gC=gT[gI].c;gS=!gS;if(gB[f]==_WK)gK[0]=f;else if(gB[f]==_BK)gK[1]=f;}
 int fA(int q_sq,int s_attacker_side){char c;int t,i,d;char ap=(s_attacker_side==0)?_WP:_BP,an=(s_attacker_side==0)?_WN:_BN,ak=(s_attacker_side==0)?_WK:_BK,ar=(s_attacker_side==0)?_WR:_BR,ab=(s_attacker_side==0)?_WB:_BB,aq=(s_attacker_side==0)?_WQ:_BQ;if(s_attacker_side==0){if(gB[q_sq-11]==ap||gB[q_sq-9]==ap)return 1;}else{if(gB[q_sq+11]==ap||gB[q_sq+9]==ap)return 1;}for(i=0;i<8;i++){t=q_sq+dN[i];if(gB[t]==an)return 1;}for(i=0;i<8;i++){t=q_sq+dK[i];if(gB[t]==ak)return 1;}for(i=0;i<4;i++){d=dR[i];t=q_sq+d;while(gB[t]!=_O){c=gB[t];if(c!=_E){if(c==ar||c==aq)return 1;break;}t+=d;}}for(i=0;i<4;i++){d=dB[i];t=q_sq+d;while(gB[t]!=_O){c=gB[t];if(c!=_E){if(c==ab||c==aq)return 1;break;}t+=d;}}return 0;}
 void fP_pawn(int q_sq){int t,pd,dd,cl,cr;if(gS==0){pd=10;dd=20;cl=9;cr=11;t=q_sq+pd;if(gB[t]==_E){if(t>=91&&t<=98){fL(M_V(q_sq,t,P_Q,F_R));fL(M_V(q_sq,t,P_R,F_R));fL(M_V(q_sq,t,P_B,F_R));fL(M_V(q_sq,t,P_N,F_R));}else fL(M_V(q_sq,t,0,F_N));if(q_sq>=31&&q_sq<=38){t=q_sq+dd;if(gB[q_sq+pd]==_E&&gB[t]==_E)fL(M_V(q_sq,t,0,F_D));}}t=q_sq+cl;if(gB[t]!=_O&&fP(gB[t])){if(t>=91&&t<=98){fL(M_V(q_sq,t,P_Q,F_R|F_C));fL(M_V(q_sq,t,P_R,F_R|F_C));fL(M_V(q_sq,t,P_B,F_R|F_C));fL(M_V(q_sq,t,P_N,F_R|F_C));}else fL(M_V(q_sq,t,0,F_C));}t=q_sq+cr;if(gB[t]!=_O&&fP(gB[t])){if(t>=91&&t<=98){fL(M_V(q_sq,t,P_Q,F_R|F_C));fL(M_V(q_sq,t,P_R,F_R|F_C));fL(M_V(q_sq,t,P_B,F_R|F_C));fL(M_V(q_sq,t,P_N,F_R|F_C));}else fL(M_V(q_sq,t,0,F_C));}if(gE!=0){if(q_sq+cl==gE)fL(M_V(q_sq,gE,0,F_X));if(q_sq+cr==gE)fL(M_V(q_sq,gE,0,F_X));}}else{pd=-10;dd=-20;cl=-9;cr=-11;t=q_sq+pd;if(gB[t]==_E){if(t>=21&&t<=28){fL(M_V(q_sq,t,P_Q,F_R));fL(M_V(q_sq,t,P_R,F_R));fL(M_V(q_sq,t,P_B,F_R));fL(M_V(q_sq,t,P_N,F_R));}else fL(M_V(q_sq,t,0,F_N));if(q_sq>=81&&q_sq<=88){t=q_sq+dd;if(gB[q_sq+pd]==_E&&gB[t]==_E)fL(M_V(q_sq,t,0,F_D));}}t=q_sq+cl;if(gB[t]!=_O&&fP(gB[t])){if(t>=21&&t<=28){fL(M_V(q_sq,t,P_Q,F_R|F_C));fL(M_V(q_sq,t,P_R,F_R|F_C));fL(M_V(q_sq,t,P_B,F_R|F_C));fL(M_V(q_sq,t,P_N,F_R|F_C));}else fL(M_V(q_sq,t,0,F_C));}t=q_sq+cr;if(gB[t]!=_O&&fP(gB[t])){if(t>=21&&t<=28){fL(M_V(q_sq,t,P_Q,F_R|F_C));fL(M_V(q_sq,t,P_R,F_R|F_C));fL(M_V(q_sq,t,P_B,F_R|F_C));fL(M_V(q_sq,t,P_N,F_R|F_C));}else fL(M_V(q_sq,t,0,F_C));}if(gE!=0){if(q_sq+cl==gE)fL(M_V(q_sq,gE,0,F_X));if(q_sq+cr==gE)fL(M_V(q_sq,gE,0,F_X));}}}
@@ -84,63 +59,9 @@ M_t fP_parse(char*s_str){int len=strlen(s_str);int f=fQ_str(s_str),t=fQ_str(s_st
 int fV(char p){if(p==_WP||p==_BP)return 100;if(p==_WN||p==_BN)return 300;if(p==_WB||p==_BB)return 300;if(p==_WR||p==_BR)return 500;if(p==_WQ||p==_BQ)return 900;return 0;}
 int fS_score_move(M_t m){int score=0;char moving_piece=gB[M_F(m)];char captured_piece=gB[M_T(m)];if(M_L(m)&F_R)score+=900;if(captured_piece!=_E)score+=10*fV(captured_piece)-fV(moving_piece);else if(M_L(m)==F_X)score+=10*fV((gS==0)?_BP:_WP)-fV((gS==0)?_WP:_BP);return score;}
 
-// Temporary debug function to print the board state
-void print_board_debug() {
-    int i, j;
-    printf("DEBUG: Board State:\n");
-    for (i = 9; i >= 2; i--) { // Ranks 8 down to 1 (from 90-98 down to 20-28)
-        printf("DEBUG: %d ", i - 1); // Rank number (8 down to 1)
-        for (j = 1; j <= 8; j++) { // Files a to h (from 1 to 8)
-            printf("%c ", gB[i * 10 + j]);
-        }
-        printf("\n");
-    }
-    printf("DEBUG:   a b c d e f g h\n");
-    char wk_str[3], bk_str[3]; // Temporary buffers for king positions
-    strcpy(wk_str, fQ_sq(gK[0]));
-    strcpy(bk_str, fQ_sq(gK[1]));
-    printf("DEBUG: Side to move: %s\n", gS == 0 ? "White" : "Black");
-    printf("DEBUG: En passant: %s\n", gE == 0 ? "none" : fQ_sq(gE));
-    printf("DEBUG: Castling rights: %d (WKCA:%d, WQCA:%d, BKCA:%d, BQCA:%d)\n", gC, (gC&1)!=0, (gC&2)!=0, (gC&4)!=0, (gC&8)!=0);
-    printf("DEBUG: White King: %s, Black King: %s\n", wk_str, bk_str); // Use temporary buffers
-}
-
 int main(){char l[9999];setbuf(stdin,NULL);setbuf(stdout,NULL);fI();
-print_board_debug(); // Initial board state
 while(fgets(l,sizeof(l),stdin)){if(strncmp(l,"uci",3)==0){printf("uciok\n");}
 else if(strncmp(l,"isready",7)==0){printf("readyok\n");}
-else if(strncmp(l,"position startpos",17)==0){fI();char*ms=strstr(l,"moves");if(ms){ms+=6;char*tk=strtok(ms," \n");
-while(tk){
-    M_t mv=fP_parse(tk);
-    char from_sq_str[3]; // New temporary buffer
-    char to_sq_str[3];   // New temporary buffer
-    strcpy(from_sq_str, fQ_sq(M_F(mv))); // Copy first result
-    strcpy(to_sq_str, fQ_sq(M_T(mv)));   // Copy second result
-    printf("DEBUG: Parsing move: %s -> M_t: %u (from %s to %s, prom %d, flags %d)\n", tk, mv, from_sq_str, to_sq_str, M_P(mv), M_L(mv));
-    if(mv!=0){
-        fM(mv);
-        print_board_debug(); // Board state after each move in position command
-    }
-    else {
-        printf("DEBUG: Failed to parse or find move: %s\n", tk);
-    }
-    tk=strtok(NULL," \n");
-}}}
-else if(strncmp(l,"go",2)==0){
-printf("DEBUG: --- Entering GO command ---\n");
-print_board_debug(); // Board state before move generation
-fG(); // Generate moves
-printf("DEBUG: Generated moves (%d):\n", gM);
-for (int i = 0; i < gM; i++) {
-    printf("DEBUG:   %s (score: %d)\n", fS_move(gL[i]), fS_score_move(gL[i]));
-}
-if(gM>0){
-for(int i=0;i<gM-1;i++){
-for(int j=i+1;j<gM;j++){
-if(fS_score_move(gL[j])>fS_score_move(gL[i])){
-M_t temp=gL[i];
-gL[i]=gL[j];
-gL[j]=temp;}}}
-printf("info score cp 0\n"); // Added info string
-printf("bestmove %s\n",fS_move(gL[0]));}else printf("bestmove (none)\n");}
+else if(strncmp(l,"position startpos",17)==0){fI();char*ms=strstr(l,"moves");if(ms){ms+=6;char*tk=strtok(ms," \n");while(tk){M_t mv=fP_parse(tk);if(mv!=0)fM(mv);tk=strtok(NULL," \n");}}}
+else if(strncmp(l,"go",2)==0){fG();if(gM>0){for(int i=0;i<gM-1;i++){for(int j=i+1;j<gM;j++){if(fS_score_move(gL[j])>fS_score_move(gL[i])){M_t temp=gL[i];gL[i]=gL[j];gL[j]=temp;}}}printf("info score cp 0\n");printf("bestmove %s\n",fS_move(gL[0]));}else printf("bestmove (none)\n");}
 else if(strncmp(l,"quit",4)==0)break;}return 0;}
