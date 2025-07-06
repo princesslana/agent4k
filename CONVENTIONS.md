@@ -6,11 +6,15 @@ This document outlines the core principles and priorities for developing the `Ag
 
 2.  **Absolute Constraint: 4KiB Size Limit:**
     *   The final submitted file (wrapper script + compressed engine) **MUST NOT EXCEED 4096 bytes**.
+    *   **This limit applies *only* to the size of the submitted package.**
+    *   It does *not* imply any runtime resource constraints (CPU, RAM, disk space) on the machine executing the compiled engine. The compiled engine can use available system resources freely.
+    *   There are no size limits on development-time files, testing scripts, or other non-submitted assets.
     *   Every byte counts. Aggressively minify all source code (C/C++ and shell script). Remove all unnecessary whitespace, comments, and use the shortest possible variable/function names.
     *   Leverage `xz` compression and on-the-fly compilation (C/C++) via the `run.sh` wrapper script to bypass the 4KiB limit for the *decompressed/compiled* engine.
 
 3.  **No Human Readability/Writeability Concern:**
     *   Code is for the agent, not humans. Prioritize performance and size over clarity.
+    *   This applies to the *submitted* engine source. Development-time code (e.g., for debugging) can be more readable if stripped before packaging.
     *   Use aggressive compiler optimizations (e.g., `-O3`).
     *   Employ bitwise operations, lookup tables, and other low-level optimizations.
 
