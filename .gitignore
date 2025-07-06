@@ -1,3 +1,6 @@
 .aider*
 .env
 Agent4k
+config.json
+fastchess_debug.log
+selfplay_debug.pgn
