@@ -16,6 +16,7 @@ This document outlines the core principles and priorities for developing the `Ag
 3.  **No Human Readability/Writeability Concern:**
     *   Code is for the agent, not humans. Prioritize performance and size over clarity.
     *   This applies to the *submitted* engine source. Development-time code (e.g., for debugging) can be more readable if stripped before packaging.
+    *   **Name Mapping:** To aid future understanding and modification of minified code, maintain `name_map.txt` to document the mapping of original, descriptive names to their minified counterparts. This file must be kept up-to-date with any minification changes.
     *   Use aggressive compiler optimizations (e.g., `-O3`).
     *   Employ bitwise operations, lookup tables, and other low-level optimizations.
 
