@@ -14,7 +14,7 @@ run-selfplay-startpos: build
 
 run-selfplay-book: build
 	mkdir -p logs pgns
-	fastchess -engine cmd=./Agent44k name=Agent4k_2 tc=10+0.1 -pgnout file=pgns/selfplay_book.pgn -rounds 20 -openings file=8moves_v3.pgn format=pgn order=random -log file=logs/fastchess_book_debug.log level=trace engine=true
+	fastchess -engine cmd=./Agent4k name=Agent4k_1 tc=10+0.1 -engine cmd=./Agent4k name=Agent4k_2 tc=10+0.1 -pgnout file=pgns/selfplay_book.pgn -rounds 20 -openings file=8moves_v3.pgn format=pgn order=random -log file=logs/fastchess_book_debug.log level=trace engine=true
 
 # SPRT Testing
 # Define the baseline tag to compare against
