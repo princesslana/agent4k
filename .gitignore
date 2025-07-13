@@ -4,3 +4,13 @@ Agent4k
 config.json
 logs/
 pgns/
+
+# Chess engine build artifacts
+engine
+engine_smart
+engine_compressed
+engine_compressed.cpp
+agent4k_submission
+
+# Compression tools output
+compress.py
