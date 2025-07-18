@@ -100,16 +100,15 @@ agent4k/
 - Alpha/Beta: 0.05 (95% confidence)
 
 **Version Management:**
-1. `engine_baseline` - Fixed reference (current: engine_smart copy)
-2. `engine_smart` - Current best version
-3. `engine_test` - Version being developed/tested
+1. `baseline-latest` (git tag) - Current best engine for SPRT testing
+2. `main` branch - Current development version
+3. Local builds - `./build/agent4k` for testing
 
 **Testing Workflow:**
-1. Make improvements to new version (`engine_test`)
-2. Test `engine_test` vs `engine_baseline` using SPRT
-3. If SPRT passes → copy `engine_test` to `engine_smart`
-4. Git commit improvement
-5. Repeat
+1. Make improvements to source code
+2. Test new version vs baseline using SPRT
+3. If SPRT passes → commit improvement and update baseline tag
+4. Continue development cycle
 
 **Opening Book:** `8moves_v3.pgn` (Stockfish standard, 8MB PGN format)
 
@@ -148,8 +147,15 @@ fastchess -engine cmd=./build/agent4k name=Agent4k -engine cmd=./build/agent4k n
 # SPRT test vs baseline (requires baseline/engine_baseline)
 fastchess -engine cmd=baselines/engine_baseline name=Baseline -engine cmd=./build/agent4k name=Test -openings file=books/8moves_v3.pgn format=pgn -each tc=8+0.08 -sprt elo0=0 elo1=10 alpha=0.05 beta=0.05 -concurrency 4 -repeat -rounds 100
 
-# Save current engine as baseline
-cp ./build/agent4k baselines/engine_baseline
+# Update baseline to current version
+git tag -d baseline-latest 2>/dev/null || true  # Remove old baseline tag
+git tag baseline-latest  # Tag current commit as latest baseline
+
+# Build baseline engine for SPRT testing
+mkdir -p baselines
+git checkout baseline-latest
+g++ src/main.cpp src/chess.cpp -o baselines/engine_baseline
+git checkout -
 ```
 
 **Move Generation Validation:**
@@ -164,8 +170,8 @@ cp ./build/agent4k baselines/engine_baseline
 3. Build engine: `g++ src/main.cpp src/chess.cpp -o build/agent4k`
 4. Quick game test: `fastchess -engine cmd=./build/agent4k name=Agent4k -engine cmd=./build/agent4k name=Agent4k2 -each tc=8+0.08 -rounds 1 -games 2`
 5. If tests pass, run SPRT vs baseline (if baseline exists)
-6. If SPRT passes, save new baseline: `cp ./build/agent4k baselines/engine_baseline`
-7. Commit improvement to git
+6. If SPRT passes, commit improvement and update baseline-latest tag
+7. Continue development cycle
 
 **Standard Time Control:** 8+0.08 (8 seconds + 0.08 second increment) for all testing
 
