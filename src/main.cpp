@@ -19,12 +19,14 @@ int main() {
             board = parse_uci_position(line);
         }
         else if (line.substr(0, 2) == "go") {
-            // Just pick the first legal move
-            vector<Move> moves = generate_all_legal_moves(board);
+            // Search for best move
+            Move best_move = search_best_move(board, 3); // 3-ply search
             
-            if (!moves.empty()) {
-                cout << "info score cp 0" << endl;  // Output info line to avoid fastchess warnings
-                cout << "bestmove " << move_to_uci(moves[0]) << endl;
+            if (best_move.from != best_move.to) {
+                // Get evaluation for info line
+                int score = evaluate_position(board);
+                cout << "info score cp " << score << endl;
+                cout << "bestmove " << move_to_uci(best_move) << endl;
             } else {
                 cout << "bestmove a1a1" << endl;
             }

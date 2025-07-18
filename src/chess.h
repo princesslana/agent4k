@@ -57,3 +57,7 @@ string move_to_uci(const Move& move);
 Move uci_to_move(const string& uci_str);
 Board parse_uci_position(const string& position_command);
 vector<Move> generate_all_legal_moves(const Board& board);
+
+// Evaluation and search functions
+int evaluate_position(const Board& board);
+Move search_best_move(const Board& board, int depth);

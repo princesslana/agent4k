@@ -119,6 +119,11 @@ agent4k/
 2. **Game Tests** - Quick game play testing with fastchess
 3. **SPRT Tests** - Statistical validation of engine strength improvements
 
+**Testing Philosophy:**
+- **Correctness Features** (move generation, UCI protocol, legal moves): Use TDD with comprehensive unit tests
+- **Strength Features** (evaluation, search algorithms): Unit tests are optional; primary validation is ELO gain via SPRT
+- **Rationale**: Strength improvements are best measured through actual game performance rather than unit test expectations
+
 **Key Testing Commands:**
 
 **Build and Test:**
@@ -145,7 +150,8 @@ fastchess -engine cmd=./build/agent4k name=Agent4k -engine cmd=./build/agent4k n
 fastchess -engine cmd=./build/agent4k name=Agent4k -engine cmd=./build/agent4k name=Agent4k2 -each tc=8+0.08 -rounds 5 -games 2 -openings file=books/8moves_v3.pgn format=pgn order=random
 
 # SPRT test vs baseline (requires baseline/engine_baseline)
-fastchess -engine cmd=baselines/engine_baseline name=Baseline -engine cmd=./build/agent4k name=Test -openings file=books/8moves_v3.pgn format=pgn -each tc=8+0.08 -sprt elo0=0 elo1=10 alpha=0.05 beta=0.05 -concurrency 4 -repeat -rounds 100
+# NOTE: Engine order matters! Expected stronger engine should be FIRST for proper SPRT interpretation
+fastchess -engine cmd=./build/agent4k name=Test -engine cmd=baselines/engine_baseline name=Baseline -openings file=books/8moves_v3.pgn format=pgn -each tc=8+0.08 -sprt elo0=0 elo1=10 alpha=0.05 beta=0.05 -concurrency 4 -repeat -rounds 100
 
 # Update baseline to current version
 git tag -d baseline-latest 2>/dev/null || true  # Remove old baseline tag

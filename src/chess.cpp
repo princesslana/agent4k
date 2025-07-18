@@ -681,3 +681,84 @@ vector<Move> generate_all_legal_moves(const Board& board) {
     
     return all_moves;
 }
+
+// Simple material evaluation - returns score in centipawns (positive = good for side to move)
+int evaluate_position(const Board& board) {
+    int score = 0;
+    
+    // Piece values in centipawns
+    const int piece_values[] = {0, 100, 320, 330, 500, 900, 20000}; // empty, pawn, knight, bishop, rook, queen, king
+    
+    // Count material
+    for (int square = 0; square < 64; square++) {
+        int piece = board.squares[square];
+        if (piece != 0) {
+            int piece_type = abs(piece);
+            int piece_value = piece_values[piece_type];
+            score += (piece > 0) ? piece_value : -piece_value;
+        }
+    }
+    
+    // Return from perspective of side to move
+    return board.white_to_move ? score : -score;
+}
+
+// Negamax search (without alpha-beta for now)
+int negamax(const Board& board, int depth) {
+    if (depth == 0) {
+        return evaluate_position(board);
+    }
+    
+    vector<Move> moves = generate_all_legal_moves(board);
+    
+    // Check for checkmate/stalemate
+    if (moves.empty()) {
+        if (is_in_check(board, board.white_to_move)) {
+            return -20000; // Checkmate (bad for side to move)
+        } else {
+            return 0; // Stalemate
+        }
+    }
+    
+    int best_score = -30000; // Negative infinity
+    
+    for (const Move& move : moves) {
+        Board temp_board = board;
+        make_move_simple(temp_board, move);
+        
+        int score = -negamax(temp_board, depth - 1);
+        
+        if (score > best_score) {
+            best_score = score;
+        }
+    }
+    
+    return best_score;
+}
+
+// Find best move using negamax search
+Move search_best_move(const Board& board, int depth) {
+    vector<Move> moves = generate_all_legal_moves(board);
+    
+    if (moves.empty()) {
+        // No legal moves - return dummy move
+        return Move(0, 0);
+    }
+    
+    Move best_move = moves[0];
+    int best_score = -30000;
+    
+    for (const Move& move : moves) {
+        Board temp_board = board;
+        make_move_simple(temp_board, move);
+        
+        int score = -negamax(temp_board, depth - 1);
+        
+        if (score > best_score) {
+            best_score = score;
+            best_move = move;
+        }
+    }
+    
+    return best_move;
+}
