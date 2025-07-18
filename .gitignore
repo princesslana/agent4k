@@ -1,16 +1,20 @@
+# Development environment files
 .aider*
 .env
-Agent4k
+.claude/
+
+# Build artifacts
+build/
+*.o
+*.exe
+
+# Tournament and testing files
 config.json
-logs/
+*.log
+*.pgn.out
 pgns/
 
-# Chess engine build artifacts
-engine
-engine_smart
-engine_compressed
-engine_compressed.cpp
+# Temporary files
 agent4k_submission
-
-# Compression tools output
-compress.py
+*.tmp
+*.bak

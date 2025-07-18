@@ -70,14 +70,11 @@ This enables:
 ```
 agent4k/
 ├── src/
-│   ├── engine.h           # Shared header with function declarations
-│   ├── engine_core.cpp    # Core engine implementation  
+│   ├── chess.h            # Chess logic header
+│   ├── chess.cpp          # Chess logic implementation
+│   ├── chess_test.cpp     # Comprehensive tests (includes perft)
 │   ├── main.cpp           # UCI interface main function
-│   ├── perft.cpp          # Perft testing executable
-│   └── tests.cpp          # Unit tests executable
-├── tools/
-│   ├── compress.py        # Size optimization tools
-│   └── create_submission.sh
+│   └── perftsuite.epd     # Perft test positions (126 positions)
 ├── books/
 │   └── 8moves_v3.pgn     # Opening book
 ├── baselines/
@@ -86,10 +83,11 @@ agent4k/
 ```
 
 ### Development Principles
-1. **Single source of truth**: Engine logic in `engine_core.cpp`, shared via `engine.h`
-2. **No code duplication**: All executables link to `engine_core.cpp`, don't copy code
-3. **Clear separation**: Engine logic, UCI interface, tests, tools in separate files
-4. **Proper linking**: Split main() functions from core logic to enable test compilation
+1. **Single source of truth**: Engine logic in `chess.cpp`, shared via `chess.h`
+2. **No code duplication**: All executables link to `chess.cpp`, don't copy code
+3. **Clear separation**: Engine logic, UCI interface, tests in separate files
+4. **Bulletproof move generation**: Validated against 126 perft positions
+5. **Minimal UCI compliance**: Only implement required commands for 4k size
 
 ## Testing & Development Workflow
 
@@ -118,33 +116,61 @@ agent4k/
 ### Testing Approach & Commands
 
 **Layered Testing Strategy:**
-1. **Unit Tests** - Test specific functions in isolation
-2. **Perft Tests** - Verify move generation correctness via node counting
+1. **Comprehensive Tests** - Unit tests + perft validation (126 positions) in one suite
+2. **Game Tests** - Quick game play testing with fastchess
 3. **SPRT Tests** - Statistical validation of engine strength improvements
 
 **Key Testing Commands:**
-- Compile engine: `g++ main.cpp engine_core.cpp -o engine`
-- Run perft tests: `g++ perft.cpp engine_core.cpp -o perft && ./perft`
-- Run unit tests: `g++ tests.cpp engine_core.cpp -o tests && ./tests`
-- SPRT testing: `fastchess -engine cmd=./baselines/engine_baseline name=Baseline -engine cmd=./engine name=Test -openings file=books/8moves_v3.pgn format=pgn -each tc=0.1+0.01 -sprt elo0=0 elo1=10 alpha=0.05 beta=0.05 -concurrency 4 -repeat -rounds 100`
-- Size check: `wc -c submission.gz`
-- Compression: `gzip -9 main.cpp engine_core.cpp`
 
-**Perft Debugging:**
-- Standard perft values: perft(1)=20, perft(2)=400, perft(3)=8902
-- Split perft for debugging specific moves: Use webperft tool for comparison
-- Copy-make approach preferred over make/unmake for debugging clarity
+**Build and Test:**
+```bash
+# Build UCI engine
+g++ src/main.cpp src/chess.cpp -o build/agent4k
+
+# Build and run comprehensive tests (includes perft validation)
+g++ src/chess_test.cpp src/chess.cpp -o build/test_chess && ./build/test_chess
+
+# Quick UCI test
+echo -e "uci\nisready\nposition startpos\ngo\nquit" | ./build/agent4k
+```
+
+**Game Testing with fastchess:**
+```bash
+# Basic 2-game self-play test
+fastchess -engine cmd=./build/agent4k name=Agent4k -engine cmd=./build/agent4k name=Agent4k2 -each tc=8+0.08 -rounds 1 -games 2
+
+# Test with opening book (4 games)
+fastchess -engine cmd=./build/agent4k name=Agent4k -engine cmd=./build/agent4k name=Agent4k2 -each tc=8+0.08 -rounds 2 -games 2 -openings file=books/8moves_v3.pgn format=pgn order=random
+
+# Longer test (10 games with book)
+fastchess -engine cmd=./build/agent4k name=Agent4k -engine cmd=./build/agent4k name=Agent4k2 -each tc=8+0.08 -rounds 5 -games 2 -openings file=books/8moves_v3.pgn format=pgn order=random
+
+# SPRT test vs baseline (requires baseline/engine_baseline)
+fastchess -engine cmd=baselines/engine_baseline name=Baseline -engine cmd=./build/agent4k name=Test -openings file=books/8moves_v3.pgn format=pgn -each tc=8+0.08 -sprt elo0=0 elo1=10 alpha=0.05 beta=0.05 -concurrency 4 -repeat -rounds 100
+
+# Save current engine as baseline
+cp ./build/agent4k baselines/engine_baseline
+```
+
+**Move Generation Validation:**
+- Comprehensive perft suite with 126 positions validates all edge cases
+- Standard starting position: perft(1)=20, perft(2)=400, perft(3)=8902
+- All perft tests run automatically in the comprehensive test suite
+- Copy-make approach used for clean legal move validation
 
 ### Development Workflow
-1. Edit `src/engine_core.cpp` with improvements
-2. Run unit tests: `./tests` (check specific functions)
-3. Run perft tests: `./perft` (verify move generation correctness)
-4. If tests pass, run SPRT vs baseline using fastchess
-5. If SPRT passes, copy `./engine` to `baselines/engine_baseline`
-6. Commit improvement to git
+1. Edit `src/chess.cpp` or `src/main.cpp` with improvements
+2. Run comprehensive tests: `g++ src/chess_test.cpp src/chess.cpp -o build/test_chess && ./build/test_chess`
+3. Build engine: `g++ src/main.cpp src/chess.cpp -o build/agent4k`
+4. Quick game test: `fastchess -engine cmd=./build/agent4k name=Agent4k -engine cmd=./build/agent4k name=Agent4k2 -each tc=8+0.08 -rounds 1 -games 2`
+5. If tests pass, run SPRT vs baseline (if baseline exists)
+6. If SPRT passes, save new baseline: `cp ./build/agent4k baselines/engine_baseline`
+7. Commit improvement to git
+
+**Standard Time Control:** 8+0.08 (8 seconds + 0.08 second increment) for all testing
 
 **Debugging Process:**
-1. Unit tests reveal functional bugs (e.g., wrong moves generated)
-2. Perft tests reveal move generation bugs (e.g., missing/extra moves)
-3. Split perft identifies specific problematic moves
+1. Comprehensive tests reveal both functional and move generation bugs
+2. 126 perft positions catch edge cases and missing/extra moves
+3. Game tests reveal UCI protocol and time management issues
 4. Copy-make approach allows clean position testing without side effects
